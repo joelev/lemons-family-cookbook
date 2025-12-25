@@ -1,26 +1,122 @@
 ---
-import '@/styles/global.css';
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Masthead from '@/components/Masthead.astro';
+import RecipeCard from '@/components/RecipeCard.astro';
+import RecipeGrid from '@/components/RecipeGrid.astro';
+
+const categories = [
+  { slug: 'cakes-pies-frostings', label: 'Cakes & Pies' },
+  { slug: 'candies-cookies-confections', label: 'Cookies & Candy' },
+  { slug: 'main-dishes-meats-vegetables', label: 'Main Dishes' },
+  { slug: 'quickbreads-muffins-pancakes', label: 'Quick Breads' },
+  { slug: 'salads', label: 'Salads' },
+  { slug: 'yeast-breads-rolls-sweet-dough', label: 'Yeast Breads' },
+];
+
+// Get a sampling of featured recipes
+const allRecipes = await getCollection('recipes');
+const featuredSlugs = [
+  'grandma_lemons_sugar_cookies',
+  'german_chocolate_cake',
+  'home_made_bread',
+  'fried_chicken',
+  'potato_salad',
+  'my_pancakes_or_waffles',
+];
+const featured = featuredSlugs
+  .map(slug => allRecipes.find(r => r.id === slug + '.md' || r.id === slug))
+  .filter(Boolean);
 ---
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lemons Family Cookbook</title>
-  </head>
-  <body class="min-h-screen">
-    <main class="max-w-4xl mx-auto px-6 py-16">
-      <h1 class="font-display text-display-xl text-center mb-8">
-        Lemons Family Cookbook
-      </h1>
-      <p class="text-center text-text-muted font-ui text-sm uppercase tracking-widest mb-12">
-        A Collection of Family Recipes
-      </p>
-      <div class="rule my-12"></div>
-      <p class="text-center text-xl">
-        Site under construction. Recipes coming soon.
-      </p>
-    </main>
-  </body>
-</html>
+<BaseLayout title="Home">
+  <div class="py-section-md">
+    <Masthead />
+
+    <div class="max-w-4xl mx-auto px-6">
+      <div class="rule-ornament my-section-sm" aria-hidden="true">~</div>
+
+      <!-- Categories -->
+      <nav class="categories" aria-label="Recipe categories">
+        <ul class="categories__list">
+          {categories.map(({ slug, label }) => (
+            <li>
+              <a href={`/category/${slug}`} class="categories__link">{label}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <!-- Welcome text -->
+      <article class="welcome">
+        <p class="welcome__lead">When I think of the Lemons Family, more than anything, I think of food.</p>
+
+        <p>Entering in these recipes has been an opportunity for me to reminisce about the times we all gathered in the old house on the highway over the years, times that were almost invariably tied in some way to the tastes and smells of the food that was around.</p>
+
+        <p>Pushing blankets down in the morning to the smells of biscuits, ham, and gravy; meals so large they overflowed the countertops to cover the tops of the freezer, the washer and dryer, and whatever surface was spare; engaging in <em>spirited discussion</em> about god-knows-what over coffee and pie (or cake, or ice cream, or cookies, or brownies).</p>
+
+        <p>I always presumed that every family ate so lavishly and with such frequency. It was years later (coincidentally, nearly the same time I had to start cooking for myself) that I realized what effort and concern had gone into preparing it all.</p>
+
+        <p>These foods are as much a part of my experience of 'family' as anything, and for Grandma to have taken the time and effort to catalog them was a remarkable gift. Being able to pass these recipes and stories on to family and friends is important, even though it will just be an echo of those times, at best.</p>
+
+        <p>It's hokey to say so, but every time I typed in a new recipe I spent a little time in that kitchen, remembering, and I hope that as you go through some of these recipes (and hopefully make some of the food!), you can remember some of those times, too.</p>
+      </article>
+
+      <!-- Featured recipes -->
+      <section class="featured" aria-labelledby="featured-heading">
+        <h2 id="featured-heading" class="featured__heading">Family Favorites</h2>
+        <RecipeGrid columns={3}>
+          {featured.map((recipe) => recipe && (
+            <RecipeCard
+              title={recipe.data.title}
+              slug={recipe.id}
+            />
+          ))}
+        </RecipeGrid>
+        <p class="featured__more">
+          <a href="/recipes">Browse all {allRecipes.length} recipes</a>
+        </p>
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .categories {
+    @apply mb-section-md;
+  }
+
+  .categories__list {
+    @apply flex flex-wrap justify-center gap-2 list-none p-0 m-0;
+  }
+
+  .categories__link {
+    @apply inline-block px-4 py-2 font-ui text-fluid-sm text-ink-muted no-underline;
+    @apply border border-rule rounded-full;
+    @apply hover:border-sienna hover:text-sienna transition-colors duration-150;
+  }
+
+  .welcome {
+    @apply max-w-prose mx-auto mb-section-lg;
+  }
+
+  .welcome__lead {
+    @apply text-fluid-xl text-ink font-display mb-6;
+  }
+
+  .welcome p {
+    @apply text-fluid-base text-ink-light mb-4 leading-relaxed;
+  }
+
+  .featured {
+    @apply border-t border-rule pt-section-md;
+  }
+
+  .featured__heading {
+    @apply text-center mb-section-sm;
+  }
+
+  .featured__more {
+    @apply text-center mt-8 font-ui text-fluid-sm;
+  }
+</style>

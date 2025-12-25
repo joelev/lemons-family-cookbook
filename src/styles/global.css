@@ -8,23 +8,52 @@
   html {
     @apply antialiased;
     font-feature-settings: "kern" 1, "liga" 1;
+    scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-background text-text font-body;
-    font-size: 1.125rem;
-    line-height: 1.7;
+    @apply bg-cream text-ink font-body text-fluid-base;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-display text-text;
+  /* Heading hierarchy */
+  h1 {
+    @apply font-display text-ink text-display-xl;
+  }
+
+  h2 {
+    @apply font-display text-ink text-display-lg;
+  }
+
+  h3 {
+    @apply font-display text-ink text-display-md;
+  }
+
+  h4 {
+    @apply font-display text-ink text-display-sm;
+  }
+
+  /* Links */
+  a {
+    @apply text-sienna underline-offset-2 decoration-sienna/40;
+    @apply hover:text-sienna-dark hover:decoration-sienna-dark/60;
+    @apply transition-colors duration-150;
+  }
+
+  /* Focus styles */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-sienna;
+  }
+
+  /* Selection */
+  ::selection {
+    @apply bg-sienna/20 text-ink;
   }
 }
 
 @layer components {
   /* Drop cap for first letter of content */
   .drop-cap::first-letter {
-    @apply font-display text-accent float-left;
+    @apply font-display text-sienna float-left;
     font-size: 4em;
     line-height: 0.8;
     padding-right: 0.1em;
@@ -36,9 +65,56 @@
     @apply border-t border-rule;
   }
 
-  /* Typographic ornament */
-  .ornament::before {
-    content: "•";
-    @apply text-accent mx-2;
+  /* Decorative rule with center ornament */
+  .rule-ornament {
+    @apply flex items-center gap-4 text-ink-muted;
+  }
+
+  .rule-ornament::before,
+  .rule-ornament::after {
+    content: "";
+    @apply flex-1 border-t border-rule;
+  }
+
+  /* Lead paragraph */
+  .lead {
+    @apply text-fluid-lg text-ink-light;
+  }
+
+  /* Small caps */
+  .small-caps {
+    @apply font-ui text-fluid-xs uppercase tracking-widest text-ink-muted;
+  }
+
+  /* Card base */
+  .card {
+    @apply bg-ivory rounded-card shadow-card;
+    @apply hover:shadow-card-hover transition-shadow duration-200;
+  }
+
+  /* Prose container for recipe content */
+  .prose-recipe {
+    @apply max-w-prose;
+  }
+
+  .prose-recipe p {
+    @apply mb-4;
+  }
+
+  .prose-recipe ul,
+  .prose-recipe ol {
+    @apply mb-4 pl-6;
+  }
+
+  .prose-recipe li {
+    @apply mb-2;
+  }
+
+  .prose-recipe ul li {
+    @apply list-disc;
+  }
+
+  .prose-recipe ol li {
+    @apply list-decimal;
   }
 }

@@ -1,0 +1,93 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import RecipeCard from '@/components/RecipeCard.astro';
+import RecipeGrid from '@/components/RecipeGrid.astro';
+
+const categoryMeta: Record<string, { label: string; description: string }> = {
+  'cakes-pies-frostings': {
+    label: 'Cakes & Pies',
+    description: 'Celebratory cakes, homestyle pies, and the frostings that make them special',
+  },
+  'candies-cookies-confections': {
+    label: 'Cookies & Candy',
+    description: 'Sweet treats from the cookie jar and candy kitchen',
+  },
+  'main-dishes-meats-vegetables': {
+    label: 'Main Dishes',
+    description: 'Hearty meals from roasts and casseroles to family favorites',
+  },
+  'quickbreads-muffins-pancakes': {
+    label: 'Quick Breads',
+    description: 'Biscuits, muffins, pancakes, and breads that need no rising time',
+  },
+  'salads': {
+    label: 'Salads',
+    description: 'Fresh salads, gelatin molds, and side dishes',
+  },
+  'yeast-breads-rolls-sweet-dough': {
+    label: 'Yeast Breads',
+    description: 'Homemade breads, dinner rolls, and sweet dough treats',
+  },
+};
+
+export async function getStaticPaths() {
+  return [
+    { params: { category: 'cakes-pies-frostings' } },
+    { params: { category: 'candies-cookies-confections' } },
+    { params: { category: 'main-dishes-meats-vegetables' } },
+    { params: { category: 'quickbreads-muffins-pancakes' } },
+    { params: { category: 'salads' } },
+    { params: { category: 'yeast-breads-rolls-sweet-dough' } },
+  ];
+}
+
+const { category } = Astro.params;
+const meta = categoryMeta[category!];
+
+const allRecipes = await getCollection('recipes');
+const recipes = allRecipes
+  .filter((recipe) => recipe.data.category === category)
+  .sort((a, b) => a.data.title.localeCompare(b.data.title));
+---
+
+<BaseLayout title={meta.label} description={meta.description} compactHeader>
+  <div class="category-page">
+    <header class="category-header">
+      <h1 class="category-title">{meta.label}</h1>
+      <p class="category-description">{meta.description}</p>
+      <p class="category-count">{recipes.length} recipes</p>
+    </header>
+
+    <RecipeGrid>
+      {recipes.map((recipe) => (
+        <RecipeCard
+          title={recipe.data.title}
+          slug={recipe.id}
+        />
+      ))}
+    </RecipeGrid>
+  </div>
+</BaseLayout>
+
+<style>
+  .category-page {
+    @apply max-w-5xl mx-auto px-6 py-section-md;
+  }
+
+  .category-header {
+    @apply text-center mb-section-sm;
+  }
+
+  .category-title {
+    @apply mb-3;
+  }
+
+  .category-description {
+    @apply text-fluid-lg text-ink-light max-w-prose mx-auto mb-2;
+  }
+
+  .category-count {
+    @apply font-ui text-fluid-xs uppercase tracking-wider text-ink-muted;
+  }
+</style>

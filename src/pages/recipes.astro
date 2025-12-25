@@ -1,0 +1,51 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import RecipeCard from '@/components/RecipeCard.astro';
+import RecipeGrid from '@/components/RecipeGrid.astro';
+
+const categoryLabels: Record<string, string> = {
+  'cakes-pies-frostings': 'Cakes & Pies',
+  'candies-cookies-confections': 'Cookies & Candy',
+  'main-dishes-meats-vegetables': 'Main Dishes',
+  'quickbreads-muffins-pancakes': 'Quick Breads',
+  'salads': 'Salads',
+  'yeast-breads-rolls-sweet-dough': 'Yeast Breads',
+};
+
+const allRecipes = await getCollection('recipes');
+const recipes = allRecipes.sort((a, b) => a.data.title.localeCompare(b.data.title));
+---
+
+<BaseLayout title="All Recipes" description="Browse all family recipes alphabetically" compactHeader>
+  <div class="recipes-page">
+    <header class="recipes-header">
+      <h1>All Recipes</h1>
+      <p class="recipes-count">{recipes.length} family recipes</p>
+    </header>
+
+    <RecipeGrid>
+      {recipes.map((recipe) => (
+        <RecipeCard
+          title={recipe.data.title}
+          slug={recipe.id}
+          category={categoryLabels[recipe.data.category]}
+        />
+      ))}
+    </RecipeGrid>
+  </div>
+</BaseLayout>
+
+<style>
+  .recipes-page {
+    @apply max-w-5xl mx-auto px-6 py-section-md;
+  }
+
+  .recipes-header {
+    @apply text-center mb-section-sm;
+  }
+
+  .recipes-count {
+    @apply font-ui text-fluid-xs uppercase tracking-wider text-ink-muted mt-2;
+  }
+</style>

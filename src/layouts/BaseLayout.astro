@@ -1,0 +1,75 @@
+---
+import '@/styles/global.css';
+import Masthead from '@/components/Masthead.astro';
+import Navigation from '@/components/Navigation.astro';
+import Footer from '@/components/Footer.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  showNav?: boolean;
+  compactHeader?: boolean;
+}
+
+const {
+  title,
+  description = 'A collection of treasured family recipes passed down through generations.',
+  showNav = true,
+  compactHeader = false,
+} = Astro.props;
+
+const isHome = title === 'Home';
+const fullTitle = isHome ? 'Lemons Family Cookbook' : `${title} | Lemons Family Cookbook`;
+const siteUrl = Astro.site?.href || 'https://joelev.github.io/lemons-family-cookbook';
+const canonicalUrl = new URL(Astro.url.pathname, siteUrl).href;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{fullTitle}</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Canonical -->
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={isHome ? 'website' : 'article'} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:site_name" content="Lemons Family Cookbook" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+
+    <slot name="head" />
+  </head>
+  <body class="min-h-screen flex flex-col">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    {!isHome && <Masthead compact={compactHeader} />}
+    {showNav && <Navigation />}
+
+    <main id="main-content" class="flex-1">
+      <slot />
+    </main>
+
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .skip-link {
+    @apply absolute -top-10 left-4 z-50 px-4 py-2;
+    @apply bg-sienna text-white font-ui text-sm rounded no-underline;
+    @apply focus:top-4 transition-all;
+  }
+</style>

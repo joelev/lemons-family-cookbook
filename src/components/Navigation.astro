@@ -1,0 +1,98 @@
+---
+const categories = [
+  { slug: 'cakes-pies-frostings', label: 'Cakes & Pies' },
+  { slug: 'candies-cookies-confections', label: 'Cookies & Candy' },
+  { slug: 'main-dishes-meats-vegetables', label: 'Main Dishes' },
+  { slug: 'quickbreads-muffins-pancakes', label: 'Quick Breads' },
+  { slug: 'salads', label: 'Salads' },
+  { slug: 'yeast-breads-rolls-sweet-dough', label: 'Yeast Breads' },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<nav class="nav" aria-label="Recipe categories">
+  <button
+    class="nav__toggle"
+    aria-expanded="false"
+    aria-controls="nav-menu"
+    type="button"
+  >
+    <span class="nav__toggle-text">Menu</span>
+    <svg class="nav__toggle-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path class="nav__toggle-open" d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <path class="nav__toggle-close" d="M5 5l10 10M5 15l10-10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+  </button>
+
+  <ul id="nav-menu" class="nav__menu">
+    {categories.map(({ slug, label }) => {
+      const href = `/category/${slug}`;
+      const isActive = currentPath.startsWith(href);
+      return (
+        <li class="nav__item">
+          <a
+            href={href}
+            class:list={["nav__link", { "nav__link--active": isActive }]}
+            aria-current={isActive ? "page" : undefined}
+          >
+            {label}
+          </a>
+        </li>
+      );
+    })}
+  </ul>
+</nav>
+
+<style>
+  .nav {
+    @apply border-b border-rule;
+  }
+
+  .nav__toggle {
+    @apply flex items-center gap-2 w-full py-3 px-4 font-ui text-fluid-sm text-ink-muted;
+    @apply md:hidden;
+  }
+
+  .nav__toggle[aria-expanded="true"] .nav__toggle-open {
+    @apply hidden;
+  }
+
+  .nav__toggle[aria-expanded="false"] .nav__toggle-close {
+    @apply hidden;
+  }
+
+  .nav__menu {
+    @apply hidden flex-col md:flex md:flex-row md:justify-center md:gap-1;
+    @apply py-2 md:py-3;
+  }
+
+  .nav__menu.is-open {
+    @apply flex;
+  }
+
+  .nav__item {
+    @apply list-none;
+  }
+
+  .nav__link {
+    @apply block px-4 py-2 font-ui text-fluid-sm text-ink-muted no-underline;
+    @apply hover:text-ink hover:bg-linen rounded transition-colors duration-150;
+    @apply md:px-3 md:py-1.5;
+  }
+
+  .nav__link--active {
+    @apply text-sienna font-medium;
+  }
+</style>
+
+<script>
+  const toggle = document.querySelector('.nav__toggle');
+  const menu = document.querySelector('.nav__menu');
+
+  toggle?.addEventListener('click', () => {
+    const expanded = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!expanded));
+    menu?.classList.toggle('is-open');
+  });
+</script>

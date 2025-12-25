@@ -1,0 +1,48 @@
+---
+interface Props {
+  compact?: boolean;
+}
+
+const { compact = false } = Astro.props;
+---
+
+<header class:list={["masthead", { "masthead--compact": compact }]}>
+  <a href="/" class="masthead__link">
+    <span class="masthead__title">Lemons Family Cookbook</span>
+    {!compact && (
+      <span class="masthead__subtitle">A Collection of Family Recipes</span>
+    )}
+  </a>
+</header>
+
+<style>
+  .masthead {
+    @apply text-center py-section-sm;
+  }
+
+  .masthead--compact {
+    @apply py-4 border-b border-rule;
+  }
+
+  .masthead__link {
+    @apply no-underline inline-block;
+  }
+
+  .masthead__link:hover .masthead__title {
+    @apply text-sienna;
+  }
+
+  .masthead__title {
+    @apply font-display text-ink block transition-colors duration-150;
+    font-size: clamp(1.5rem, 1rem + 2.5vw, 2.5rem);
+    line-height: 1.2;
+  }
+
+  .masthead--compact .masthead__title {
+    font-size: clamp(1.25rem, 1rem + 1vw, 1.5rem);
+  }
+
+  .masthead__subtitle {
+    @apply font-ui text-fluid-xs uppercase tracking-widest text-ink-muted block mt-2;
+  }
+</style>

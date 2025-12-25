@@ -1,0 +1,32 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="footer__content">
+    <p class="footer__copyright">
+      Lemons Family Cookbook
+    </p>
+    <p class="footer__note">
+      Recipes preserved with love
+    </p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    @apply border-t border-rule mt-auto py-section-sm;
+  }
+
+  .footer__content {
+    @apply max-w-4xl mx-auto px-6 text-center;
+  }
+
+  .footer__copyright {
+    @apply font-display text-ink-muted text-fluid-sm;
+  }
+
+  .footer__note {
+    @apply font-ui text-fluid-xs text-ink-muted/70 mt-1;
+  }
+</style>

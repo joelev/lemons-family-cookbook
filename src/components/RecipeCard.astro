@@ -1,0 +1,61 @@
+---
+interface Props {
+  title: string;
+  slug: string;
+  category?: string;
+}
+
+const { title, slug, category } = Astro.props;
+
+// Get first letter for decorative initial
+const initial = title.charAt(0).toUpperCase();
+---
+
+<article class="recipe-card">
+  <a href={`/recipe/${slug}`} class="recipe-card__link">
+    <span class="recipe-card__initial" aria-hidden="true">{initial}</span>
+    <h3 class="recipe-card__title">{title}</h3>
+    {category && (
+      <span class="recipe-card__category">{category}</span>
+    )}
+  </a>
+</article>
+
+<style>
+  .recipe-card {
+    @apply relative;
+  }
+
+  .recipe-card__link {
+    @apply block p-card bg-ivory rounded-card no-underline;
+    @apply border border-transparent;
+    @apply transition-all duration-200 ease-out;
+  }
+
+  .recipe-card__link:hover {
+    @apply border-rule shadow-card-hover;
+    transform: translateY(-2px);
+  }
+
+  .recipe-card__link:hover .recipe-card__initial {
+    @apply text-sienna;
+  }
+
+  .recipe-card__initial {
+    @apply font-display text-rule-dark block;
+    @apply transition-colors duration-200;
+    font-size: clamp(3rem, 2rem + 4vw, 4.5rem);
+    line-height: 0.85;
+    margin-bottom: 0.25rem;
+  }
+
+  .recipe-card__title {
+    @apply font-display text-ink text-fluid-lg;
+    @apply m-0;
+  }
+
+  .recipe-card__category {
+    @apply font-ui text-fluid-xs text-ink-muted uppercase tracking-wider;
+    @apply mt-2 block;
+  }
+</style>

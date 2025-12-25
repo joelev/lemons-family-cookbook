@@ -1,0 +1,197 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const recipes = await getCollection('recipes');
+  return recipes.map((recipe) => ({
+    params: { slug: recipe.id },
+    props: { recipe },
+  }));
+}
+
+const { recipe } = Astro.props;
+const { Content } = await recipe.render();
+
+// Get all recipes for prev/next navigation
+const allRecipes = await getCollection('recipes');
+const sortedRecipes = allRecipes.sort((a, b) => a.data.title.localeCompare(b.data.title));
+const currentIndex = sortedRecipes.findIndex((r) => r.id === recipe.id);
+const prevRecipe = currentIndex > 0 ? sortedRecipes[currentIndex - 1] : null;
+const nextRecipe = currentIndex < sortedRecipes.length - 1 ? sortedRecipes[currentIndex + 1] : null;
+
+// Format category for display
+const categoryLabels: Record<string, string> = {
+  'cakes-pies-frostings': 'Cakes & Pies',
+  'candies-cookies-confections': 'Cookies & Candy',
+  'main-dishes-meats-vegetables': 'Main Dishes',
+  'quickbreads-muffins-pancakes': 'Quick Breads',
+  'salads': 'Salads',
+  'yeast-breads-rolls-sweet-dough': 'Yeast Breads',
+};
+const categoryLabel = categoryLabels[recipe.data.category] || recipe.data.category;
+
+// JSON-LD structured data for recipes
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Recipe',
+  name: recipe.data.title,
+  author: {
+    '@type': 'Person',
+    name: 'Lemons Family',
+  },
+  recipeCategory: categoryLabel,
+  description: `A treasured family recipe for ${recipe.data.title} from the Lemons Family Cookbook.`,
+};
+---
+
+<BaseLayout title={recipe.data.title} compactHeader>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} slot="head" />
+  <article class="recipe-page">
+    <header class="recipe-header">
+      <a href={`/category/${recipe.data.category}`} class="recipe-category">
+        {categoryLabel}
+      </a>
+      <h1 class="recipe-title">{recipe.data.title}</h1>
+    </header>
+
+    <div class="recipe-content">
+      <Content />
+    </div>
+
+    {recipe.data.story && (
+      <aside class="recipe-story">
+        <p class="recipe-story__text">{recipe.data.story}</p>
+      </aside>
+    )}
+
+    <nav class="recipe-nav" aria-label="Recipe navigation">
+      <div class="recipe-nav__prev">
+        {prevRecipe && (
+          <a href={`/recipe/${prevRecipe.id}`} class="recipe-nav__link">
+            <span class="recipe-nav__label">Previous</span>
+            <span class="recipe-nav__title">{prevRecipe.data.title}</span>
+          </a>
+        )}
+      </div>
+      <div class="recipe-nav__next">
+        {nextRecipe && (
+          <a href={`/recipe/${nextRecipe.id}`} class="recipe-nav__link recipe-nav__link--next">
+            <span class="recipe-nav__label">Next</span>
+            <span class="recipe-nav__title">{nextRecipe.data.title}</span>
+          </a>
+        )}
+      </div>
+    </nav>
+  </article>
+</BaseLayout>
+
+<style>
+  .recipe-page {
+    @apply max-w-3xl mx-auto px-6 py-section-md;
+  }
+
+  .recipe-header {
+    @apply text-center mb-section-sm;
+  }
+
+  .recipe-category {
+    @apply font-ui text-fluid-xs uppercase tracking-widest text-ink-muted;
+    @apply no-underline hover:text-sienna;
+  }
+
+  .recipe-title {
+    @apply mt-3 mb-0;
+  }
+
+  /* Recipe content styling */
+  .recipe-content {
+    @apply mb-section-sm;
+  }
+
+  .recipe-content :global(ul) {
+    @apply list-none p-0 mb-8 border-y border-rule py-6;
+  }
+
+  .recipe-content :global(li) {
+    @apply py-1.5 text-fluid-base;
+    @apply border-b border-rule/50 last:border-0;
+  }
+
+  .recipe-content :global(p) {
+    @apply text-fluid-base mb-4 leading-relaxed;
+    @apply max-w-prose;
+  }
+
+  .recipe-content :global(p:first-of-type) {
+    @apply text-fluid-lg text-ink-light;
+  }
+
+  /* Story/attribution section */
+  .recipe-story {
+    @apply border-l-2 border-sienna/30 pl-6 py-2 mb-section-sm;
+  }
+
+  .recipe-story__text {
+    @apply font-body italic text-fluid-base text-ink-light m-0;
+  }
+
+  /* Prev/Next navigation */
+  .recipe-nav {
+    @apply grid grid-cols-2 gap-4 pt-section-sm border-t border-rule;
+  }
+
+  .recipe-nav__prev {
+    @apply text-left;
+  }
+
+  .recipe-nav__next {
+    @apply text-right;
+  }
+
+  .recipe-nav__link {
+    @apply block no-underline;
+  }
+
+  .recipe-nav__label {
+    @apply font-ui text-fluid-xs uppercase tracking-wider text-ink-muted;
+    @apply block mb-1;
+  }
+
+  .recipe-nav__title {
+    @apply font-display text-fluid-lg text-ink;
+    @apply transition-colors duration-150;
+  }
+
+  .recipe-nav__link:hover .recipe-nav__title {
+    @apply text-sienna;
+  }
+
+  /* Print styles */
+  @media print {
+    .recipe-page {
+      @apply max-w-none p-0;
+    }
+
+    .recipe-nav,
+    .recipe-category {
+      @apply hidden;
+    }
+
+    .recipe-title {
+      @apply text-3xl;
+    }
+
+    .recipe-content :global(ul) {
+      @apply border-0 py-0 mb-4;
+    }
+
+    .recipe-content :global(li) {
+      @apply border-0 py-0.5;
+    }
+
+    .recipe-story {
+      @apply border-l border-black/20;
+    }
+  }
+</style>
