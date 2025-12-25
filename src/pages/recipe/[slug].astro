@@ -5,7 +5,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 export async function getStaticPaths() {
   const recipes = await getCollection('recipes');
   return recipes.map((recipe) => ({
-    params: { slug: recipe.id },
+    params: { slug: recipe.id.replace(/\.md$/, '') },
     props: { recipe },
   }));
 }
@@ -49,7 +49,7 @@ const jsonLd = {
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} slot="head" />
   <article class="recipe-page">
     <header class="recipe-header">
-      <a href={`/category/${recipe.data.category}`} class="recipe-category">
+      <a href={`${import.meta.env.BASE_URL}category/${recipe.data.category}`} class="recipe-category">
         {categoryLabel}
       </a>
       <h1 class="recipe-title">{recipe.data.title}</h1>
@@ -68,7 +68,7 @@ const jsonLd = {
     <nav class="recipe-nav" aria-label="Recipe navigation">
       <div class="recipe-nav__prev">
         {prevRecipe && (
-          <a href={`/recipe/${prevRecipe.id}`} class="recipe-nav__link">
+          <a href={`${import.meta.env.BASE_URL}recipe/${prevRecipe.id.replace(/\.md$/, '')}`} class="recipe-nav__link">
             <span class="recipe-nav__label">Previous</span>
             <span class="recipe-nav__title">{prevRecipe.data.title}</span>
           </a>
@@ -76,7 +76,7 @@ const jsonLd = {
       </div>
       <div class="recipe-nav__next">
         {nextRecipe && (
-          <a href={`/recipe/${nextRecipe.id}`} class="recipe-nav__link recipe-nav__link--next">
+          <a href={`${import.meta.env.BASE_URL}recipe/${nextRecipe.id.replace(/\.md$/, '')}`} class="recipe-nav__link recipe-nav__link--next">
             <span class="recipe-nav__label">Next</span>
             <span class="recipe-nav__title">{nextRecipe.data.title}</span>
           </a>

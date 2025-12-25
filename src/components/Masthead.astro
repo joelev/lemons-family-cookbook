@@ -7,7 +7,7 @@ const { compact = false } = Astro.props;
 ---
 
 <header class:list={["masthead", { "masthead--compact": compact }]}>
-  <a href="/" class="masthead__link">
+  <a href={import.meta.env.BASE_URL} class="masthead__link">
     <span class="masthead__title">Lemons Family Cookbook</span>
     {!compact && (
       <span class="masthead__subtitle">A Collection of Family Recipes</span>

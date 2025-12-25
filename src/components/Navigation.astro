@@ -27,7 +27,7 @@ const currentPath = Astro.url.pathname;
 
   <ul id="nav-menu" class="nav__menu">
     {categories.map(({ slug, label }) => {
-      const href = `/category/${slug}`;
+      const href = `${import.meta.env.BASE_URL}category/${slug}`;
       const isActive = currentPath.startsWith(href);
       return (
         <li class="nav__item">

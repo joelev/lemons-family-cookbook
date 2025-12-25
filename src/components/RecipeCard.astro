@@ -12,7 +12,7 @@ const initial = title.charAt(0).toUpperCase();
 ---
 
 <article class="recipe-card">
-  <a href={`/recipe/${slug}`} class="recipe-card__link">
+  <a href={`${import.meta.env.BASE_URL}recipe/${slug.replace(/\.md$/, '')}`} class="recipe-card__link">
     <span class="recipe-card__initial" aria-hidden="true">{initial}</span>
     <h3 class="recipe-card__title">{title}</h3>
     {category && (

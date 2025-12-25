@@ -41,7 +41,7 @@ const featured = featuredSlugs
         <ul class="categories__list">
           {categories.map(({ slug, label }) => (
             <li>
-              <a href={`/category/${slug}`} class="categories__link">{label}</a>
+              <a href={`${import.meta.env.BASE_URL}category/${slug}`} class="categories__link">{label}</a>
             </li>
           ))}
         </ul>
@@ -74,7 +74,7 @@ const featured = featuredSlugs
           ))}
         </RecipeGrid>
         <p class="featured__more">
-          <a href="/recipes">Browse all {allRecipes.length} recipes</a>
+          <a href={`${import.meta.env.BASE_URL}recipes`}>Browse all {allRecipes.length} recipes</a>
         </p>
       </section>
     </div>
